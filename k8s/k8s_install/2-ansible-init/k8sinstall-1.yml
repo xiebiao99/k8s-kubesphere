@@ -1,0 +1,38 @@
+---
+- hosts: k8smaster k8sworker
+  gather_facts: no
+  vars:
+    - master_ip: 192.168.66.10
+  tasks:
+    - name: tar containerd-file
+      shell: tar -C / -xzf cri-containerd-cni-1.6.0-linux-amd64.tar.gz
+      args:
+        chdir: /root/k8s/k8s_install/manifests/
+        
+    - name: manifests-config
+      shell: sh /root/k8s/k8s_install/manifests/manifests-config.sh  
+
+    - name: tar libseccomp
+      shell: tar -zxvf libseccomp-2.5.3.tar.gz
+      args:
+        chdir: /root/k8s/k8s_install/manifests/
+
+    - name: make libseccomp
+      shell: ./configure --prefix=/usr --disable-static && make && make install && yum install -y epel-release libseccomp libseccomp-dev
+      args:
+        chdir: /root/k8s/k8s_install/manifests/libseccomp-2.5.3/
+        
+    - name: install docker
+      shell: sh install-docker.sh
+      args:
+        chdir: /root/k8s/k8s_install/3-docker-install/
+      
+    - name: config docker
+      shell: sh docker-daemon-config.sh && sh docker-daemon-config.sh
+      args:
+        chdir: /root/k8s/k8s_install/3-docker-install/  
+      
+    - name: install runc-go
+      shell: sh runc-go-install.sh  
+      args:
+        chdir: /root/k8s/k8s_install/3-docker-install/

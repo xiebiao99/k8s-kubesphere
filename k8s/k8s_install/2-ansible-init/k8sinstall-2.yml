@@ -1,0 +1,10 @@
+---
+- hosts: k8smaster k8sworker
+  gather_facts: no
+  vars:
+    - master_ip: 192.168.66.10
+  tasks:
+    - name: install k8s
+      shell: sh kubelet_install.sh
+      args:
+        chdir: /root/k8s/k8s_install/4-k8s-install/
